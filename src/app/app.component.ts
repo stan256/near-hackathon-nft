@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core'
+import {NearService} from "./near.service"
 
 @Component({
   selector: 'app-root',
@@ -6,5 +7,24 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'test';
+  fileToUpload: File | null = null;
+
+  constructor(private near: NearService) { }
+
+  mint() {
+  }
+
+  authenticated() {
+    return this.near.authenticated()
+  }
+
+  signIn() {
+    this.near.signIn()
+      .then(r => console.log(`User is signed in: ${r}`))
+      .catch(console.error)
+  }
+
+  signOut() {
+    this.near.signOut()
+  }
 }
