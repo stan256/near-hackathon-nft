@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core'
-import {ConnectConfig, Near, WalletConnection} from "near-api-js"
+import {ConnectConfig, Contract, Near, WalletConnection} from "near-api-js"
 import * as nearAPI from "near-api-js"
 
 @Injectable({
@@ -8,12 +8,35 @@ import * as nearAPI from "near-api-js"
 export class NearService {
   near: Near | undefined = undefined
   wallet: WalletConnection | undefined = undefined
+  nftContract: any
 
   constructor() {
     nearAPI.connect(config).then(near => {
       this.near = near
       this.wallet = new WalletConnection(near, null)
-      console.log("Near connected")
+      this.nftContract = new Contract(
+        this.wallet.account(),
+        CONTRACT,
+        {
+          changeMethods: ['nft_mint'],
+          viewMethods: []
+        }
+      )
+    })
+  }
+
+  mint(tokenId: string, ipfsLink: string, nftTitle: string, nftDescription: string) {
+    let req = {
+      token_id: tokenId,
+      receiver_id: this.wallet?.account().accountId,
+      token_metadata: {
+        title: nftTitle,
+        description: nftDescription,
+        media: ipfsLink
+      }
+    }
+    this.nftContract!.nft_mint(req, "300000000000000", "100000000000000000000000").then((a: any) => {
+      console.log("Minted successfully")
     })
   }
 

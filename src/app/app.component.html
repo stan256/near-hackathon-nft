@@ -1,8 +1,33 @@
-<div *ngIf="authenticated()">
-  <img src="https://near.org/wp-content/uploads/2021/09/brand-icon-300x300.png" alt="">
-  <p><button (click)="mint()">Mint NFT</button></p>
-  <p><button (click)="signOut()">Sign out</button></p>
-</div>
-<div *ngIf="!authenticated()">
-  <button (click)="signIn()">Sign in with Near Wallet</button>
+<div class="d-flex flex-column min-vh-100 justify-content-center align-items-center">
+
+  <div *ngIf="authenticated()" class="panel">
+    <div *ngIf="isLoading" class="text-center">
+      <div class="lds-dual-ring"></div>
+    </div>
+
+    <div *ngIf="mintingFinished" class="mb50 text-center">
+      <h5>Mint is successful. Please check your wallet.</h5>
+      <a href="https://explorer.testnet.near.org/transactions/{{lastTransactionId}}">Link to transaction for the details</a>
+    </div>
+
+    <div *ngIf="!isLoading" class="mb100">
+      <h5 class="text-center">Mint your NFT:</h5>
+      <p><label><input type="text" name="name" [(ngModel)]="nftTitle"> NFT name</label></p>
+      <p><label><input type="text" name="description" [(ngModel)]="nftDescription"> NFT description</label></p>
+      <p><input type="file" (change)="handleFileInput($event)" accept="image/gif, image/jpeg, image/png" class="mb50"></p>
+      <p class="text-center">
+        <button (click)="mint()" *ngIf="fileToUpload" class="btn btn-success">Mint NFT</button>
+      </p>
+    </div>
+
+    <p class="text-center">
+      <button (click)="signOut()" class="btn btn-secondary">Sign out</button>
+    </p>
+  </div>
+
+  <div *ngIf="!authenticated()" class="text-center panel">
+    <h3>Please, sign in using your Near wallet</h3>
+    <button (click)="signIn()" class="btn btn-primary">Sign in with Near Wallet</button>
+  </div>
+
 </div>

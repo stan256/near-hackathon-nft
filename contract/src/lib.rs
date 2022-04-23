@@ -5,12 +5,10 @@ use near_contract_standards::non_fungible_token::{Token, TokenId};
 use near_contract_standards::non_fungible_token::NonFungibleToken;
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::collections::LazyOption;
-use near_sdk::json_types::ValidAccountId;
 use near_sdk::{
   env, near_bindgen, AccountId, BorshStorageKey, PanicOnDefault, Promise, PromiseOrValue,
 };
 
-near_sdk::setup_alloc!();
 near_contract_standards::impl_non_fungible_token_core!(Contract, tokens);
 near_contract_standards::impl_non_fungible_token_approval!(Contract, tokens);
 near_contract_standards::impl_non_fungible_token_enumeration!(Contract, tokens);
@@ -41,7 +39,7 @@ impl NonFungibleTokenMetadataProvider for Contract {
 #[near_bindgen]
 impl Contract {
   #[init]
-  pub fn new_default_meta(owner_id: ValidAccountId) -> Self {
+  pub fn new_default_meta(owner_id: AccountId) -> Self {
     Self::new(
       owner_id,
       NFTContractMetadata {
@@ -57,7 +55,7 @@ impl Contract {
   }
 
   #[init]
-  pub fn new(owner_id: ValidAccountId, metadata: NFTContractMetadata) -> Self {
+  pub fn new(owner_id: AccountId, metadata: NFTContractMetadata) -> Self {
     assert!(!env::state_exists(), "Already initialized");
     metadata.assert_valid();
     Self {
@@ -73,7 +71,7 @@ impl Contract {
   }
 
   #[payable]
-  pub fn nft_mint(&mut self, token_id: TokenId, receiver_id: ValidAccountId, token_metadata: TokenMetadata) -> Token {
-    self.tokens.mint(token_id, receiver_id, Some(token_metadata))
+  pub fn nft_mint(&mut self, token_id: TokenId, receiver_id: AccountId, token_metadata: TokenMetadata) -> Token {
+    self.tokens.internal_mint(token_id, receiver_id, Some(token_metadata))
   }
 }
